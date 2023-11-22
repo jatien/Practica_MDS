@@ -1,0 +1,35 @@
+---
+title: "Practica_MDS"
+format: html
+editor: visual
+---
+
+````{r}
+library(MVA)
+m_PM <- read.csv("ANIMALS-matrixPM.txt")
+m_SP <- read.csv("ANIMALS-matrixSP.txt")
+m_VH <- read.csv("ANIMALS-matrixVH.txt")
+filum <- read.csv("fileListANIMAL_phylum.txt")
+```
+
+
+```{r}
+library(tidyverse)
+n <- 369  # Replace 5 with the desired number of dimensions
+
+# Creating a vector with named dimensions
+vector <- numeric(n)
+names(vector) <- 1:n
+
+# Printing the vector
+print(vector)
+new_column_name <- "new_name"
+names(m_SP)[1] <- new_column_name
+
+m_SP <- m_SP %>% separate("new_name", vector)
+```
+
+```{r}
+cmdscale(m_PM,k=2,eig=FALSE)
+
+```

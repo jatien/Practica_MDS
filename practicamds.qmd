@@ -4,32 +4,94 @@ format: html
 editor: visual
 ---
 
-````{r}
-library(MVA)
-m_PM <- read.csv("ANIMALS-matrixPM.txt")
-m_SP <- read.csv("ANIMALS-matrixSP.txt")
-m_VH <- read.csv("ANIMALS-matrixVH.txt")
+```{r}
+library(tidyr)
+library(tidyverse)
+m_PM <- read.csv("ANIMALS-matrixPM.txt",header = FALSE)
+m_SP <- read.csv("ANIMALS-matrixSP.txt",header = FALSE) 
+m_VH <- read.csv("ANIMALS-matrixVH.txt",header = FALSE) 
 filum <- read.csv("fileListANIMAL_phylum.txt")
 ```
 
-
 ```{r}
-library(tidyverse)
-n <- 369  # Replace 5 with the desired number of dimensions
-
-# Creating a vector with named dimensions
-vector <- numeric(n)
-names(vector) <- 1:n
-
-# Printing the vector
-print(vector)
-new_column_name <- "new_name"
-names(m_SP)[1] <- new_column_name
-
-m_SP <- m_SP %>% separate("new_name", vector)
+#Ahora separamos los datos y convertimos en matriz
+m_PM<-read.table(text = as.character(m_SP$V1), header = FALSE)
+matrix_PM <- as.matrix(m_PM)
+m_VH<-read.table(text = as.character(m_VH$V1), header = FALSE)
+matrix_VH <- as.matrix(m_VH)
+m_SP<-read.table(text = as.character(m_SP$V1), header = FALSE)
+matrix_SP <- as.matrix(m_SP)
 ```
 
 ```{r}
-cmdscale(m_PM,k=2,eig=FALSE)
-
+#Separamos el dataframe filum en dos columnas
+filum <- separate(filum,Animal.Phylum, sep = -3, into = c('animal', 'phylum'))
 ```
+
+
+```{r}
+PM_dist=cmdscale(matrix_PM,k=2)
+class(PM_dist)
+```
+
+```{r}
+datos_PM=as.data.frame(PM_dist)
+datos_PM=mutate(datos_PM, philum=filum$phylum, .keep = "all", .before = V1 )
+datos_PM$philum=as.factor(datos_PM$philum)
+```
+
+```{r}
+ggplot(datos_PM) +
+  geom_point(mapping = aes(x = V1,
+                           y = V2,
+                           color = philum), size=3)+ theme_bw() +
+  theme(axis.text = element_text(size=20),
+        axis.title = element_text(size=20, face = "bold"),
+        legend.title = element_text(size=20)) + 
+  guides(fill = guide_legend(title = "filum"))
+```
+
+```{r}
+SP_dist=cmdscale(matrix_SP,k=2)
+class(SP_dist)
+```
+
+```{r}
+datos_SP=as.data.frame(SP_dist)
+datos_SP=mutate(datos_SP, philum=filum$phylum, .keep = "all", .before = V1 )
+datos_SP$philum=as.factor(datos_SP$philum)
+```
+
+```{r}
+ggplot(datos_SP) +
+  geom_point(mapping = aes(x = V1,
+                           y = V2,
+                           color = philum), size=3)+ theme_bw() +
+  theme(axis.text = element_text(size=20),
+        axis.title = element_text(size=20, face = "bold"),
+        legend.title = element_text(size=20)) + 
+  guides(fill = guide_legend(title = "filum"))
+```
+
+```{r}
+VH_dist=cmdscale(matrix_VH,k=2)
+class(VH_dist)
+```
+
+```{r}
+datos_VH=as.data.frame(VH_dist)
+datos_VH=mutate(datos_VH, philum=filum$phylum, .keep = "all", .before = V1 )
+datos_VH$philum=as.factor(datos_VH$philum)
+```
+
+```{r}
+ggplot(datos_VH) +
+  geom_point(mapping = aes(x = V1,
+                           y = V2,
+                           color = philum), size=3)+ theme_bw() +
+  theme(axis.text = element_text(size=20),
+        axis.title = element_text(size=20, face = "bold"),
+        legend.title = element_text(size=20)) + 
+  guides(fill = guide_legend(title = "filum"))
+```
+

@@ -10,22 +10,40 @@ library(tidyverse)
 m_PM <- read.csv("ANIMALS-matrixPM.txt",header = FALSE)
 m_SP <- read.csv("ANIMALS-matrixSP.txt",header = FALSE) 
 m_VH <- read.csv("ANIMALS-matrixVH.txt",header = FALSE) 
-filum <- read.csv("fileListANIMAL_phylum.txt")
+filum <- read.csv("fileListANIMAL_phylum.txt", header = FALSE)
 ```
 
 ```{r}
 #Ahora separamos los datos y convertimos en matriz
-m_PM<-read.table(text = as.character(m_SP$V1), header = FALSE)
+m_PM<-read.table(text = as.character(m_SP$V1))
 matrix_PM <- as.matrix(m_PM)
-m_VH<-read.table(text = as.character(m_VH$V1), header = FALSE)
+m_VH<-read.table(text = as.character(m_VH$V1))
 matrix_VH <- as.matrix(m_VH)
-m_SP<-read.table(text = as.character(m_SP$V1), header = FALSE)
+m_SP<-read.table(text = as.character(m_SP$V1))
 matrix_SP <- as.matrix(m_SP)
 ```
 
 ```{r}
 #Separamos el dataframe filum en dos columnas
-filum <- separate(filum,Animal.Phylum, sep = -3, into = c('animal', 'phylum'))
+filum <- separate(filum,V1, sep = -3, into = c('animal', 'phylum'))
+filum <- filum %>%
+  mutate(phylum = case_when(
+    phylum == 101 ~ "Vertebrates",
+    phylum == 102 ~ "Lancelet",
+    phylum == 103 ~ "Ascidians",
+    phylum == 104 ~ "Hechinoderms",
+    phylum == 105 ~ "Hemichordates",
+    phylum == 106 ~ "Arthropods",
+    phylum == 107 ~ "Nematodes",
+    phylum == 108 ~ "Annelids",
+    phylum == 109 ~ "Mollusks",
+    phylum == 110 ~ "Brachiopodas",
+    phylum == 111 ~ "Flatworms",
+    phylum == 112 ~ "Cnidarians",
+    phylum == 113 ~ "Placozoans",
+    phylum == 114 ~ "Poriferans",
+    TRUE ~ phylum  # Keep other values unchanged
+  ))
 ```
 
 
@@ -45,7 +63,7 @@ ggplot(datos_PM) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
                            color = philum), size=3)+ theme_bw() +
-  theme(axis.text = element_text(size=20),
+  theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
   guides(fill = guide_legend(title = "filum"))
@@ -67,7 +85,7 @@ ggplot(datos_SP) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
                            color = philum), size=3)+ theme_bw() +
-  theme(axis.text = element_text(size=20),
+  theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
   guides(fill = guide_legend(title = "filum"))
@@ -89,7 +107,7 @@ ggplot(datos_VH) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
                            color = philum), size=3)+ theme_bw() +
-  theme(axis.text = element_text(size=20),
+  theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
   guides(fill = guide_legend(title = "filum"))

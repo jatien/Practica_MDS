@@ -112,4 +112,9 @@ ggplot(datos_VH) +
         legend.title = element_text(size=20)) + 
   guides(fill = guide_legend(title = "filum"))
 ```
+```{r}
+library(MVA)
 
+plot(datos_PM, type="n")
+text(datos_PM, labels = rownames(datos_PM))
+```

@@ -15,7 +15,7 @@ filum <- read.csv("fileListANIMAL_phylum.txt", header = FALSE)
 
 ```{r}
 #Ahora separamos los datos y convertimos en matriz
-m_PM<-read.table(text = as.character(m_SP$V1))
+m_PM<-read.table(text = as.character(m_PM$V1))
 matrix_PM <- as.matrix(m_PM)
 m_VH<-read.table(text = as.character(m_VH$V1))
 matrix_VH <- as.matrix(m_VH)
@@ -44,8 +44,18 @@ filum <- filum %>%
     phylum == 114 ~ "Poriferans",
     TRUE ~ phylum  # Keep other values unchanged
   ))
+
+  
 ```
 
+```{r}
+filum %>% group_by(phylum) %>% 
+  summarise(count = n(), .groups = "drop")
+
+
+```
+
+En primer lugar vemos que hay diferencias bastante grandes en las cantidades de seres vivos de cada filo, hay más de 200 vertebrados mientras que hay varias categorías con tan solo un representante, como los anélidos o los braquiópodos.
 
 ```{r}
 PM_dist=cmdscale(matrix_PM,k=2)
@@ -59,6 +69,8 @@ datos_PM$philum=as.factor(datos_PM$philum)
 ```
 
 ```{r}
+my_colors <- c('#FF0000','#9400D3', '#4B0082', '#0000FF', '#00BFFF', '#00FFFF',
+               '#8B0000', '#B22222','#800000' , '#FFA500', '#FF8C00', '#00FF00', '#008000', '#FFFF00')
 ggplot(datos_PM) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
@@ -66,8 +78,12 @@ ggplot(datos_PM) +
   theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
-  guides(fill = guide_legend(title = "filum"))
+  guides(fill = guide_legend(title = "filum"))+
+scale_color_manual(values = setNames(my_colors, unique(datos_PM$philum)))
+  
 ```
+
+El Kernel PM (Pyramid Match), hace un buen trabajo agrupando a algunos seres vivos como los artrópodos (el segundo grupo mayoritario). Sin embargo vemos como los vertebrados, a pesar de tener varios individuos agrupados en el centro, en general están bastante dispersos.
 
 ```{r}
 SP_dist=cmdscale(matrix_SP,k=2)
@@ -81,6 +97,8 @@ datos_SP$philum=as.factor(datos_SP$philum)
 ```
 
 ```{r}
+my_colors <- c('#FF0000','#9400D3', '#4B0082', '#0000FF', '#00BFFF', '#00FFFF',
+               '#8B0000', '#B22222','#800000' , '#FFA500', '#FF8C00', '#00FF00', '#008000', '#FFFF00')
 ggplot(datos_SP) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
@@ -88,8 +106,12 @@ ggplot(datos_SP) +
   theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
-  guides(fill = guide_legend(title = "filum"))
+  guides(fill = guide_legend(title = "filum"))+
+scale_color_manual(values = setNames(my_colors, unique(datos_PM$philum)))
+  
 ```
+
+El Kernel SP (Shortest Path), agrupa mejor a los vertebrados a la vez que mantiene una buena agrupación de los artrópodos.
 
 ```{r}
 VH_dist=cmdscale(matrix_VH,k=2)
@@ -103,6 +125,8 @@ datos_VH$philum=as.factor(datos_VH$philum)
 ```
 
 ```{r}
+my_colors <- c('#FF0000','#9400D3', '#4B0082', '#0000FF', '#00BFFF', '#00FFFF',
+               '#8B0000', '#B22222','#800000' , '#FFA500', '#FF8C00', '#00FF00', '#008000', '#FFFF00')
 ggplot(datos_VH) +
   geom_point(mapping = aes(x = V1,
                            y = V2,
@@ -110,11 +134,11 @@ ggplot(datos_VH) +
   theme(axis.text = element_text(size=8),
         axis.title = element_text(size=20, face = "bold"),
         legend.title = element_text(size=20)) + 
-  guides(fill = guide_legend(title = "filum"))
+  guides(fill = guide_legend(title = "filum"))+
+scale_color_manual(values = setNames(my_colors, unique(datos_PM$philum)))
+  
 ```
-```{r}
-library(MVA)
 
-plot(datos_PM, type="n")
-text(datos_PM, labels = rownames(datos_PM))
-```
+Por último, el Kernel VH (Vertex histogram) es el que mejor agrupa a los vertebrados con diferencia, sin embargo falla a la hora de agrupar a los artrópodos. También es el que más separa a los grupos minoritarios, sin embargo es difícil distinguir una agrupación cuando se cuentan con tan pocos individuos.
+
+
